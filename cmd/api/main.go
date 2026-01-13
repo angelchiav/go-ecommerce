@@ -1,16 +1,19 @@
-package api
+package main
 
 import (
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/go-ecommerce/internal/config"
+	"github.com/angelchiav/go-ecommerce/internal/app"
+	"github.com/angelchiav/go-ecommerce/internal/config"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
 	cfg := config.Load()
-	a, err := app.New()
+	log.Printf("DB_URL:%q", cfg.DBURL)
+	a, err := app.New(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,6 +1,11 @@
 package config
 
-import "os"
+import (
+	"os"
+	"path/filepath"
+
+	"github.com/joho/godotenv"
+)
 
 type Config struct {
 	Addr  string
@@ -8,9 +13,31 @@ type Config struct {
 }
 
 func Load() Config {
+	_ = loadDotEnvFromModuleRoot()
+
 	return Config{
-		Addr:  os.Getenv("Addr"),
-		DBURL: os.Getenv("DBURL"),
+		Addr:  env("ADDR", ":8080"),
+		DBURL: mustEnv("DB_URL"),
+	}
+}
+
+func loadDotEnvFromModuleRoot() error {
+	dir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	for {
+
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+
+			_ = godotenv.Load(filepath.Join(dir, ".env"))
+			return nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return nil
+		}
+		dir = parent
 	}
 }
 
