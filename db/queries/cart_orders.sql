@@ -69,3 +69,18 @@ WHERE id = $1;
 
 -- name: ClearCartItems :exec
 DELETE FROM cart_items WHERE cart_id = $1;
+
+-- name: GetActiveCartID :one
+SELECT id
+FROM carts
+WHERE user_id = $1 AND status = 'active'
+LIMIT 1;
+
+-- name: UpdateCartItemQtyInCart :exec
+UPDATE cart_items
+SET qty = $3, updated_at = now()
+WHERE id = $1 AND cart_id = $2;
+
+-- name: DeleteCartItemInCart :exec
+DELETE FROM cart_items
+WHERE id = $1 AND cart_id = $2;

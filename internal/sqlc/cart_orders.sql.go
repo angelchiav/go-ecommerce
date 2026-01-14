@@ -85,6 +85,35 @@ func (q *Queries) DeleteCartItem(ctx context.Context, id int64) error {
 	return err
 }
 
+const deleteCartItemInCart = `-- name: DeleteCartItemInCart :exec
+DELETE FROM cart_items
+WHERE id = $1 AND cart_id = $2
+`
+
+type DeleteCartItemInCartParams struct {
+	ID     int64 `json:"id"`
+	CartID int64 `json:"cart_id"`
+}
+
+func (q *Queries) DeleteCartItemInCart(ctx context.Context, arg DeleteCartItemInCartParams) error {
+	_, err := q.db.ExecContext(ctx, deleteCartItemInCart, arg.ID, arg.CartID)
+	return err
+}
+
+const getActiveCartID = `-- name: GetActiveCartID :one
+SELECT id
+FROM carts
+WHERE user_id = $1 AND status = 'active'
+LIMIT 1
+`
+
+func (q *Queries) GetActiveCartID(ctx context.Context, userID int64) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getActiveCartID, userID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const getOrCreateActiveCart = `-- name: GetOrCreateActiveCart :one
 WITH existing AS (
   SELECT c.id FROM carts c WHERE c.user_id = $1 AND c.status = 'active' LIMIT 1
@@ -230,6 +259,23 @@ type UpdateCartItemQtyParams struct {
 
 func (q *Queries) UpdateCartItemQty(ctx context.Context, arg UpdateCartItemQtyParams) error {
 	_, err := q.db.ExecContext(ctx, updateCartItemQty, arg.ID, arg.Qty)
+	return err
+}
+
+const updateCartItemQtyInCart = `-- name: UpdateCartItemQtyInCart :exec
+UPDATE cart_items
+SET qty = $3, updated_at = now()
+WHERE id = $1 AND cart_id = $2
+`
+
+type UpdateCartItemQtyInCartParams struct {
+	ID     int64 `json:"id"`
+	CartID int64 `json:"cart_id"`
+	Qty    int32 `json:"qty"`
+}
+
+func (q *Queries) UpdateCartItemQtyInCart(ctx context.Context, arg UpdateCartItemQtyInCartParams) error {
+	_, err := q.db.ExecContext(ctx, updateCartItemQtyInCart, arg.ID, arg.CartID, arg.Qty)
 	return err
 }
 
