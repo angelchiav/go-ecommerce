@@ -8,6 +8,40 @@ import (
 	"time"
 )
 
+type Cart struct {
+	ID        int64     `json:"id"`
+	UserID    int64     `json:"user_id"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type CartItem struct {
+	ID        int64     `json:"id"`
+	CartID    int64     `json:"cart_id"`
+	ProductID int64     `json:"product_id"`
+	Qty       int32     `json:"qty"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Order struct {
+	ID         int64     `json:"id"`
+	UserID     int64     `json:"user_id"`
+	Status     string    `json:"status"`
+	TotalCents int32     `json:"total_cents"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+type OrderItem struct {
+	ID             int64 `json:"id"`
+	OrderID        int64 `json:"order_id"`
+	ProductID      int64 `json:"product_id"`
+	UnitPriceCents int32 `json:"unit_price_cents"`
+	Qty            int32 `json:"qty"`
+	LineTotalCents int32 `json:"line_total_cents"`
+}
+
 type Product struct {
 	ID          int64     `json:"id"`
 	Name        string    `json:"name"`
