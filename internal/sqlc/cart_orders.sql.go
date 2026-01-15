@@ -143,8 +143,8 @@ SELECT
   ci.product_id,
   ci.qty,
   p.name,
-  p.price_cents,
-  (p.price_cents * ci.qty)::int AS line_total_cents
+  (p.price_cents::int) AS price_cents,
+  (p.price_cents::int * ci.qty)::int AS line_total_cents
 FROM cart_items ci
 JOIN products p ON p.id = ci.product_id
 WHERE ci.cart_id = $1
@@ -152,12 +152,12 @@ ORDER BY ci.id
 `
 
 type ListCartItemsRow struct {
-	ID             int64   `json:"id"`
-	ProductID      int64   `json:"product_id"`
-	Qty            int32   `json:"qty"`
-	Name           string  `json:"name"`
-	PriceCents     float64 `json:"price_cents"`
-	LineTotalCents int32   `json:"line_total_cents"`
+	ID             int64  `json:"id"`
+	ProductID      int64  `json:"product_id"`
+	Qty            int32  `json:"qty"`
+	Name           string `json:"name"`
+	PriceCents     int32  `json:"price_cents"`
+	LineTotalCents int32  `json:"line_total_cents"`
 }
 
 func (q *Queries) ListCartItems(ctx context.Context, cartID int64) ([]ListCartItemsRow, error) {

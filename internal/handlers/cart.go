@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -22,6 +23,7 @@ func userIDFromRequest(r *http.Request) int64 {
 func (h *Cart) Get(w http.ResponseWriter, r *http.Request) {
 	cv, err := h.cart.Get(r.Context(), userIDFromRequest(r))
 	if err != nil {
+		log.Printf("GET /v1/cart error: %v", err)
 		httpx.Error(w, http.StatusInternalServerError, "server_error")
 		return
 	}
@@ -47,6 +49,11 @@ func (h *Cart) AddItem(w http.ResponseWriter, r *http.Request) {
 	err := h.cart.AddItem(r.Context(), userIDFromRequest(r), req.ProductID, req.Qty)
 	if err == service.ErrQtyInvalid {
 		httpx.Error(w, http.StatusBadRequest, "qty_invalid")
+		return
+	}
+	if err != nil {
+		log.Printf("POST /v1/cart/items error: %v", err)
+		httpx.Error(w, http.StatusInternalServerError, "server_error")
 		return
 	}
 
@@ -83,6 +90,7 @@ func (h *Cart) UpdateItemQty(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
+		log.Printf("PATCH /v1/cart/items/{id} error: %v", err)
 		httpx.Error(w, http.StatusInternalServerError, "server_error")
 		return
 	}
@@ -99,6 +107,7 @@ func (h *Cart) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.cart.DeleteItem(r.Context(), userIDFromRequest(r), itemID); err != nil {
+		log.Printf("DELETE /v1/cart/items/{id} error: %v", err)
 		httpx.Error(w, http.StatusInternalServerError, "server_error")
 		return
 	}
