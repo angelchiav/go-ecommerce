@@ -8,16 +8,18 @@ import (
 )
 
 type Config struct {
-	Addr  string
-	DBURL string
+	Addr      string
+	DBURL     string
+	JWTSecret string
 }
 
 func Load() Config {
 	_ = loadDotEnvFromModuleRoot()
 
 	return Config{
-		Addr:  env("ADDR", ":8080"),
-		DBURL: mustEnv("DB_URL"),
+		Addr:      env("ADDR", ":8080"),
+		DBURL:     mustEnv("DB_URL"),
+		JWTSecret: mustEnv("JWT_SECRET"),
 	}
 }
 
