@@ -28,13 +28,13 @@ func NewAuthService(q *sqlc.Queries, jwtSecret string) *AuthService {
 }
 
 func (s *AuthService) Register(ctx context.Context, email, password string) (int64, error) {
-	email = strings.ToLower(email)
+	email = strings.ToLower(strings.TrimSpace(email))
 	if email == "" || len(password) < 8 {
 		return 0, errors.New("email_required_password_min_8")
 	}
 
 	_, err := s.q.GetUserByEmail(ctx, email)
-	if err != nil {
+	if err == nil {
 		return 0, ErrEmailTaken
 	}
 	if err != nil && err != sql.ErrNoRows {
