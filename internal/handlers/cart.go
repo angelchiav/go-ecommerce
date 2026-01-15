@@ -17,7 +17,7 @@ type Cart struct {
 func NewCart(cart *service.CartService) *Cart { return &Cart{cart: cart} }
 
 func userIDFromRequest(r *http.Request) int64 {
-	return 1
+	return httpx.MustUserID(r)
 }
 
 func (h *Cart) Get(w http.ResponseWriter, r *http.Request) {

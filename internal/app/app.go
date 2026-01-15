@@ -28,11 +28,21 @@ func New(cfg config.Config) (*App, error) {
 	cartSvc := service.NewCartService(conn, q)
 	cartH := handlers.NewCart(cartSvc)
 
-	r.Handle("GET", "/v1/cart", cartH.Get)
+	authSvc := service.NewAuthService(q, cfg.JWTSecret)
+	authH := handlers.NewAuth(authSvc, q)
+	authMW := httpx.AuthJWT(cfg.JWTSecret)
+
+	// PUBLIC
 	r.Handle("GET", "/health", health.Get)
-	r.Handle("POST", "/v1/cart/items", cartH.AddItem)
-	r.Handle("PATCH", "/v1/cart/items/{id}", cartH.UpdateItemQty)
-	r.Handle("DELETE", "/v1/cart/items/{id}", cartH.DeleteItem)
+	r.Handle("POST", "/v1/auth/register", authH.Register)
+	r.Handle("POST", "/v1/auth/login", authH.Login)
+
+	// PRIVATE
+	r.Handle("GET", "/v1/me", authMW(authH.Me))
+	r.Handle("GET", "/v1/cart", authMW(cartH.Get))
+	r.Handle("POST", "/v1/cart/items", authMW(cartH.AddItem))
+	r.Handle("PATCH", "/v1/cart/items/{id}", authMW(cartH.UpdateItemQty))
+	r.Handle("DELETE", "/v1/cart/items/{id}", authMW(cartH.DeleteItem))
 
 	h := httpx.Recover(httpx.Logger(r))
 

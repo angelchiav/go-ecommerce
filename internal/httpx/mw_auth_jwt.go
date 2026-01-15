@@ -13,7 +13,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func authJWT(secret string) func(next http.HandlerFunc) http.HandlerFunc {
+func AuthJWT(secret string) func(next http.HandlerFunc) http.HandlerFunc {
 	sec := []byte(secret)
 
 	return func(next http.HandlerFunc) http.HandlerFunc {
