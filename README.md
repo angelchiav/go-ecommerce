@@ -21,12 +21,6 @@ A clean, production-ready REST API for e-commerce built with Go. This project im
 - **sqlc** - Type-safe SQL code generation
 - **Docker Compose** - Database containerization
 
-## Prerequisites
-
-- Go 1.24 or higher
-- Docker and Docker Compose (for database)
-- PostgreSQL 16 (if not using Docker)
-
 ## Getting Started
 
 ### 1. Clone the Repository
